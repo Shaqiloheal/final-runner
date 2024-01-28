@@ -135,8 +135,22 @@ def player_animation():
         player_surface = player_walk[int(player_index)]
 
 
+def crystal_animation():
+    global crystal_surfaces, crystal_index  # Use the renamed list variable
+
+    crystal_index += 0.1
+    if crystal_index >= len(crystal_surfaces):
+        crystal_index = 0
+    current_surface = crystal_surfaces[int(crystal_index)]
+    return current_surface
+
+
+
 # Initialise Pygame
 pygame.init()
+
+icon = pygame.image.load('data/graphics/FinalFantasy/final_runner_icon.png')
+pygame.display.set_icon(icon)
 
 # Set up the display window
 screen = pygame.display.set_mode((800, 400))
@@ -146,6 +160,7 @@ game_active = False
 start_time = 0
 score = 0
 
+music_playing = True
 bg_music = pygame.mixer.Sound('data/audio/ffxvi-away-8-bit.mp3')
 bg_music.play(-1)
 bg_music.set_volume(0.3)
@@ -159,6 +174,8 @@ obstacle_group = pygame.sprite.Group()
 
 # Load font for text rendering
 test_font = pygame.font.Font('data/font/Pixeltype.ttf', 50)
+
+background_intro_surface = pygame.image.load('data/graphics/background_forest.png').convert()
 
 # Load background images and convert them for optimal performance
 background_surface = pygame.image.load('data/graphics/background_cornelia.png').convert()
@@ -197,17 +214,43 @@ player_stand = pygame.image.load('data/graphics/FinalFantasy/wol-war-cast1.png')
 player_stand = pygame.transform.rotozoom(player_stand, 0, 2)
 player_stand_rect = player_stand.get_rect(center=(400, 200))
 
+crystal_surface_1 = pygame.image.load('data/graphics/FinalFantasy/crystal/crystal1.png').convert_alpha()
+crystal_surface_2 = pygame.image.load('data/graphics/FinalFantasy/crystal/crystal2.png').convert_alpha()
+crystal_surface_3 = pygame.image.load('data/graphics/FinalFantasy/crystal/crystal3.png').convert_alpha()
+crystal_surface_4 = pygame.image.load('data/graphics/FinalFantasy/crystal/crystal4.png').convert_alpha()
+crystal_surface_5 = pygame.image.load('data/graphics/FinalFantasy/crystal/crystal5.png').convert_alpha()
+crystal_surface_6 = pygame.image.load('data/graphics/FinalFantasy/crystal/crystal6.png').convert_alpha()
+crystal_surface_7 = pygame.image.load('data/graphics/FinalFantasy/crystal/crystal7.png').convert_alpha()
+crystal_surface_8 = pygame.image.load('data/graphics/FinalFantasy/crystal/crystal8.png').convert_alpha()
+crystal_surfaces = [
+    crystal_surface_1, crystal_surface_2, crystal_surface_3,
+    crystal_surface_4, crystal_surface_5, crystal_surface_6,
+    crystal_surface_7, crystal_surface_8
+]
+
+
+crystal_index = 0
+crystal_surface = crystal_surfaces[crystal_index]
+crystal_rect = crystal_surface_1.get_rect(center=(225, 315))
+
+
 player_ko = pygame.image.load('data/graphics/FinalFantasy/wol-war-ko.png').convert_alpha()
 player_ko = pygame.transform.rotozoom(player_ko, 0, 2)
 player_ko_rect = player_ko.get_rect(center=(400, 200))
 
-title_surface = test_font.render('Final Runner', False, (111, 196, 169))
+title_surface = test_font.render('Final Runner', False, (245, 245, 220))
 title_rect = title_surface.get_rect(center=(400, 80))
 
-game_message = test_font.render('Press SPACE to run!', False, (111, 196, 169))
+game_message = test_font.render('Press SPACE to run!', False, (245, 245, 220))
 game_message_rect = game_message.get_rect(center=(400, 320))
 
-game_over_message = test_font.render(f'GAME OVER!', False, (111, 196, 169))
+sound_option = test_font.render('F1 - Music On/Off', False, (245, 245, 220))
+sound_option_rect = sound_option.get_rect(topleft=(10, 10))
+
+exit_message = test_font.render("F9 - Quit", False, (245, 245, 220))
+exit_message_rect = exit_message.get_rect(topleft=(650, 10))
+
+game_over_message = test_font.render(f'GAME OVER!', False, (245, 245, 220))
 game_over_rect = game_over_message.get_rect(center=(400, 320))
 
 # Timer
@@ -226,6 +269,20 @@ while True:
         if event.type == pygame.QUIT:
             pygame.quit()
             exit()
+
+        # Handle function key press for music toggle
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_F1:
+                music_playing = not music_playing  # Toggle the music state
+                if music_playing:
+                    bg_music.play(-1)  # Play music
+                else:
+                    bg_music.stop()  # Stop music
+
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_F9:
+                pygame.quit()
+                exit()
 
         if game_active:
             # Player jumps if mouse button
@@ -285,17 +342,21 @@ while True:
         game_active = collision_sprite()
 
     else:
-        screen.fill((94, 129, 162))
+        screen.blit(background_intro_surface, (0, 0))
         obstacle_rect_list.clear()
         player_rect.midbottom = (80, 300)
 
-        score_message = test_font.render(f'EXP Avoided: {score}', False, (111, 196, 169))
+        score_message = test_font.render(f'EXP Avoided: {score}', False, (245, 245, 220))
         score_message_rect = score_message.get_rect(center=(400, 360))
         screen.blit(title_surface, title_rect)
+        current_crystal_surface = crystal_animation()
+        screen.blit(current_crystal_surface, crystal_rect)
 
         if score == 0:
             screen.blit(player_stand, player_stand_rect)
             screen.blit(game_message, game_message_rect)
+            screen.blit(sound_option, sound_option_rect)
+            screen.blit(exit_message, exit_message_rect)
         else:
             screen.blit(player_ko, player_ko_rect)
             screen.blit(game_over_message, game_over_rect)
