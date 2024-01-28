@@ -7,11 +7,11 @@ from random import randint, choice
 class Player(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
-        player_walk_1 = pygame.image.load('data/graphics/Player/player_walk_1.png').convert_alpha()
-        player_walk_2 = pygame.image.load('data/graphics/Player/player_walk_2.png').convert_alpha()
+        player_walk_1 = pygame.image.load('data/graphics/FinalFantasy/wol-war1.png').convert_alpha()
+        player_walk_2 = pygame.image.load('data/graphics/FinalFantasy/wol-war2.png').convert_alpha()
         self.player_walk = [player_walk_1, player_walk_2]
         self.player_index = 0
-        self.player_jump = pygame.image.load('data/graphics/Player/jump.png').convert_alpha()
+        self.player_jump = pygame.image.load('data/graphics/FinalFantasy/wol-war-jump.png').convert_alpha()
 
         self.image = self.player_walk[self.player_index]
         self.rect = self.image.get_rect(midbottom=(80, 300))
@@ -55,7 +55,7 @@ class Obstacle(pygame.sprite.Sprite):
             fly_1 = pygame.image.load('data/graphics/Fly/Fly1.png').convert_alpha()
             fly_2 = pygame.image.load('data/graphics/Fly/Fly2.png').convert_alpha()
             self.frames = [fly_1, fly_2]
-            y_pos = 210
+            y_pos = 190
         else:
             snail_1 = pygame.image.load('data/graphics/snail/snail1.png').convert_alpha()
             snail_2 = pygame.image.load('data/graphics/snail/snail2.png').convert_alpha()
@@ -114,6 +114,7 @@ def collisions(player, obstacles):
                 return False
     return True
 
+
 def collision_sprite():
     if pygame.sprite.spritecollide(player.sprite, obstacle_group, False):
         obstacle_group.empty()
@@ -145,9 +146,9 @@ game_active = False
 start_time = 0
 score = 0
 
-bg_music = pygame.mixer.Sound('data/audio/music.wav')
+bg_music = pygame.mixer.Sound('data/audio/ffxvi-away-8-bit.mp3')
 bg_music.play(-1)
-bg_music.set_volume(0.1)
+bg_music.set_volume(0.3)
 
 # Groups
 player = pygame.sprite.GroupSingle()
@@ -192,9 +193,13 @@ player_rect = player_walk_1.get_rect(midbottom=(80, 300))
 player_gravity = 0
 
 # Intro Screen
-player_stand = pygame.image.load('data/graphics/Player/player_stand.png').convert_alpha()
+player_stand = pygame.image.load('data/graphics/FinalFantasy/wol-war-cast1.png').convert_alpha()
 player_stand = pygame.transform.rotozoom(player_stand, 0, 2)
 player_stand_rect = player_stand.get_rect(center=(400, 200))
+
+player_ko = pygame.image.load('data/graphics/FinalFantasy/wol-war-ko.png').convert_alpha()
+player_ko = pygame.transform.rotozoom(player_ko, 0, 2)
+player_ko_rect = player_ko.get_rect(center=(400, 200))
 
 title_surface = test_font.render('Final Runner', False, (111, 196, 169))
 title_rect = title_surface.get_rect(center=(400, 80))
@@ -300,7 +305,6 @@ while True:
 
     else:
         screen.fill((94, 129, 162))
-        screen.blit(player_stand, player_stand_rect)
         obstacle_rect_list.clear()
         player_rect.midbottom = (80, 300)
 
@@ -309,8 +313,10 @@ while True:
         screen.blit(title_surface, title_rect)
 
         if score == 0:
+            screen.blit(player_stand, player_stand_rect)
             screen.blit(game_message, game_message_rect)
         else:
+            screen.blit(player_ko, player_ko_rect)
             screen.blit(game_over_message, game_over_rect)
             screen.blit(score_message, score_message_rect)
 
