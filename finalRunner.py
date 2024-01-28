@@ -51,15 +51,15 @@ class Obstacle(pygame.sprite.Sprite):
     def __init__(self, type):
         super().__init__()
 
-        if type == 'fly':
-            fly_1 = pygame.image.load('data/graphics/Fly/Fly1.png').convert_alpha()
-            fly_2 = pygame.image.load('data/graphics/Fly/Fly2.png').convert_alpha()
-            self.frames = [fly_1, fly_2]
+        if type == 'bat':
+            bat_1 = pygame.image.load('data/graphics/FinalFantasy/bat1.png').convert_alpha()
+            bat_2 = pygame.image.load('data/graphics/FinalFantasy/bat2.png').convert_alpha()
+            self.frames = [bat_1, bat_2]
             y_pos = 190
         else:
-            snail_1 = pygame.image.load('data/graphics/snail/snail1.png').convert_alpha()
-            snail_2 = pygame.image.load('data/graphics/snail/snail2.png').convert_alpha()
-            self.frames = [snail_1, snail_2]
+            golem_1 = pygame.image.load('data/graphics/FinalFantasy/golem1.png').convert_alpha()
+            golem_2 = pygame.image.load('data/graphics/FinalFantasy/golem2.png').convert_alpha()
+            self.frames = [golem_1, golem_2]
             y_pos = 300
 
         self.animation_index = 0
@@ -84,7 +84,7 @@ class Obstacle(pygame.sprite.Sprite):
 
 def display_score():
     current_time = int(pygame.time.get_ticks() / 1000) - start_time
-    score_surface = test_font.render(f'Score: {current_time}', False, (64, 64, 64))
+    score_surface = test_font.render(f'EXP: {current_time}', False, (64, 64, 64))
     score_rect = score_surface.get_rect(center=(400, 50))
     screen.blit(score_surface, score_rect)
     return current_time
@@ -96,9 +96,9 @@ def obstacle_movement(obstacle_list):
             obstacle_rect.x -= 5
 
             if obstacle_rect.bottom == 300:
-                screen.blit(snail_surface, obstacle_rect)
+                screen.blit(golem_surface, obstacle_rect)
             else:
-                screen.blit(fly_surface, obstacle_rect)
+                screen.blit(bat_surface, obstacle_rect)
 
         obstacle_list = [obstacle for obstacle in obstacle_list if obstacle.x > -100]
 
@@ -161,23 +161,23 @@ obstacle_group = pygame.sprite.Group()
 test_font = pygame.font.Font('data/font/Pixeltype.ttf', 50)
 
 # Load background images and convert them for optimal performance
-sky_surface = pygame.image.load('data/graphics/Sky.png').convert()
-ground_surface = pygame.image.load('data/graphics/ground.png').convert()
+background_surface = pygame.image.load('data/graphics/background_cornelia.png').convert()
+# ground_surface = pygame.image.load('data/graphics/ground.png').convert()
 
 # Obstacles
-# Snail
-snail_frame_1 = pygame.image.load('data/graphics/snail/snail1.png').convert_alpha()
-snail_frame_2 = pygame.image.load('data/graphics/snail/snail2.png').convert_alpha()
-snail_frames = [snail_frame_1, snail_frame_2]
-snail_frame_index = 0
-snail_surface = snail_frames[snail_frame_index]
+# Golem
+golem_frame_1 = pygame.image.load('data/graphics/FinalFantasy/golem1.png').convert_alpha()
+golem_frame_2 = pygame.image.load('data/graphics/FinalFantasy/golem2.png').convert_alpha()
+golem_frames = [golem_frame_1, golem_frame_2]
+golem_frame_index = 0
+golem_surface = golem_frames[golem_frame_index]
 
-# Fly
-fly_frame_1 = pygame.image.load('data/graphics/Fly/Fly1.png').convert_alpha()
-fly_frame_2 = pygame.image.load('data/graphics/Fly/Fly2.png').convert_alpha()
-fly_frames = [fly_frame_1, fly_frame_2]
-fly_frame_index = 0
-fly_surface = fly_frames[fly_frame_index]
+# Bat
+bat_frame_1 = pygame.image.load('data/graphics/FinalFantasy/bat1.png').convert_alpha()
+bat_frame_2 = pygame.image.load('data/graphics/FinalFantasy/bat2.png').convert_alpha()
+bat_frames = [bat_frame_1, bat_frame_2]
+bat_frame_index = 0
+bat_surface = bat_frames[bat_frame_index]
 
 obstacle_rect_list = []
 
@@ -214,11 +214,11 @@ game_over_rect = game_over_message.get_rect(center=(400, 320))
 obstacle_timer = pygame.USEREVENT + 1
 pygame.time.set_timer(obstacle_timer, 1500)
 
-snail_animation_timer = pygame.USEREVENT + 2
-pygame.time.set_timer(snail_animation_timer, 500)
+golem_animation_timer = pygame.USEREVENT + 2
+pygame.time.set_timer(golem_animation_timer, 500)
 
-fly_animation_timer = pygame.USEREVENT + 3
-pygame.time.set_timer(fly_animation_timer, 200)
+bat_animation_timer = pygame.USEREVENT + 3
+pygame.time.set_timer(bat_animation_timer, 200)
 
 # Main game loop
 while True:
@@ -244,31 +244,27 @@ while True:
 
         if game_active:
             if event.type == obstacle_timer:
-                obstacle_group.add(Obstacle(choice(['fly', 'snail', 'snail', 'snail'])))
-                # if randint(0, 2):
-                #     obstacle_rect_list.append(snail_surface.get_rect(bottomright=(randint(900, 1100), 300)))
-                # else:
-                #     obstacle_rect_list.append(fly_surface.get_rect(bottomright=(randint(900, 1100), 210)))
+                obstacle_group.add(Obstacle(choice(['bat', 'bat', 'golem', 'golem', 'golem'])))
 
-            if event.type == snail_animation_timer:
-                if snail_frame_index == 0:
-                    snail_frame_index = 1
+            if event.type == golem_animation_timer:
+                if golem_frame_index == 0:
+                    golem_frame_index = 1
                 else:
-                    snail_frame_index = 0
-                snail_surface = snail_frames[snail_frame_index]
+                    golem_frame_index = 0
+                golem_surface = golem_frames[golem_frame_index]
 
-            if event.type == fly_animation_timer:
-                if fly_frame_index == 0:
-                    fly_frame_index = 1
+            if event.type == bat_animation_timer:
+                if bat_frame_index == 0:
+                    bat_frame_index = 1
                 else:
-                    fly_frame_index = 0
-                fly_surface = fly_frames[fly_frame_index]
+                    bat_frame_index = 0
+                bat_surface = bat_frames[bat_frame_index]
 
     if game_active:
 
         # Draw background images
-        screen.blit(sky_surface, (0, 0))
-        screen.blit(ground_surface, (0, 300))
+        screen.blit(background_surface, (0, 0))
+        # screen.blit(ground_surface, (0, 300))
 
         # Draw and position the score text
         # pygame.draw.rect(screen, '#c0e8ec', score_rect)
@@ -276,21 +272,6 @@ while True:
         # screen.blit(score_surface, score_rect)
         score = display_score()
 
-        # Snail
-        # Move the snail and reset its position if it goes off-screen
-        # snail_rect.x -= 4
-        # if snail_rect.right <= 0:
-        #     snail_rect.left = 800
-        # screen.blit(snail_surface, snail_rect)
-
-        # Player
-        # Apply gravity to the player and ensure they land on the ground
-        # player_gravity += 1
-        # player_rect.y += player_gravity
-        # if player_rect.bottom >= 300:
-        #     player_rect.bottom = 300
-        # player_animation()
-        # screen.blit(player_surface, player_rect)
         player.draw(screen)
         player.update()
 
@@ -308,7 +289,7 @@ while True:
         obstacle_rect_list.clear()
         player_rect.midbottom = (80, 300)
 
-        score_message = test_font.render(f'Score: {score}', False, (111, 196, 169))
+        score_message = test_font.render(f'EXP Avoided: {score}', False, (111, 196, 169))
         score_message_rect = score_message.get_rect(center=(400, 360))
         screen.blit(title_surface, title_rect)
 
